@@ -2,6 +2,7 @@ import os
 import logging
 import re
 import random
+import psycopg2
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
@@ -29,6 +30,16 @@ def create_intro_message(joinUserName,inviteUserName):
     message = filetext.format(joinUserName,introductions_channel_id,timeline_channel_id,inviteUserName)
 
     return message
+
+def select_random_url():
+    dsn = os.environ.get("PSQL_DSN_DOG")
+    sql = "SELECT * FROM twurl WHERE index=(SELECT (max(index) * random())::int FROM twurl)"
+    
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            results = cur.fetchall()
+    return results[0][1]
 
 # ---event function---
 
@@ -79,12 +90,7 @@ def handle_message_events(say, logger, context, message):
         say(create_intro_message(test_user_id,test_user_id))
 
     if command == "jikkainu":
-        path = "jikkainu.txt"
-        with open(path) as f:
-            lines = f.readlines()
-
-        rand_max = 40
-        say(lines[random.randint(0,rand_max-1)])
+        say(select_random_url())
 
 # other message
 @app.event("message")
