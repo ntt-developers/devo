@@ -4,7 +4,7 @@ import json
 import random
 
 def select_random_url():
-    path = "../sugaicat.txt"
+    path = os.environ["SUGAICAT_PATH"]
     with open(path) as f:
         lines = f.readlines()
 
