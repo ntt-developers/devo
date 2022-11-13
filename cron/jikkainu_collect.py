@@ -32,7 +32,7 @@ def create_url():
 
 
 def get_params(token):
-    ret = {"tweet.fields": "created_at","exclude":"retweets"}
+    ret = {"tweet.fields": "created_at","exclude":"retweets,replies"}
     if token:
         ret["pagination_token"] = token
 
@@ -95,16 +95,18 @@ def main():
                 break
             else:
                 ids.append(url)
+
+        # new Tweet -> insertDB, slackPost
         if len(ids) != 0:
             insert_url(ids)
             for url in ids:
                 message = title_message
                 message += url
                 slack_post_message(message,dog_channel)
-                if len(ids) != 1
+                if len(ids) != 1:
                     time.sleep(1)
         ids.clear()
-        c = c + 1
+        c += 1
         time.sleep(1)
 
 if __name__ == "__main__":
