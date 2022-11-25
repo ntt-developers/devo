@@ -81,13 +81,13 @@ def main():
     for res in result:
         url = "https://twitter.com/jikkainu/status/"+res['id']
         db_url = select_url(url)
-        if db_url == "0":
+        if db_url == 0:
             ids.append(url)
 
     # new Tweet -> insertDB, slackPost
     if len(ids) != 0:
-        insert_url(ids)
-        for url in ids:
+        insert_url(reversed(ids))
+        for url in reversed(ids):
             message = title_message
             message += url
             slack_post_message(message,dog_channel)
