@@ -2,32 +2,34 @@ import os
 import requests
 import json
 import random
+import datetime
 
-def select_random_url():
+def select_random_file():
     path = os.environ["SUGAICAT_PATH"]
-    with open(path) as f:
-        lines = f.readlines()
+    files = os.listdir(path)
+    files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
+    fileone = random.choice(files_file)
+    return os.path.join(path, fileone)
 
-    rand_max = 797
-    return lines[random.randint(0,rand_max-1)]
-
-def slack_post_message(message,channel):
-    url = "https://slack.com/api/chat.postMessage"
+def slack_post_file(message,channel,filepath,title):
+    url = "https://slack.com/api/files.upload"
     token = os.environ["SLACK_BOT_TOKEN_DEVO"]
-    
+    files = {'file': open(filepath, 'rb')}
+    filename = os.path.basename(filepath)
     payload = {"token":token,
-            "channel":channel,
-            "text":message
+            "channels":channel,
+            "initial_comment":message,
+            "filename":filename,
+            "title":title
     }
-
-    requests.post(url,data=payload)
-
+    response = requests.post(url, files=files, data=payload)
+    #print(response.status_code)
+    #print(response.content)
 # --- Main ---
 
-url = select_random_url()
+filepath = select_random_file()
 cat_channel = os.environ["CAT_CHANNEL_ID"]
 
 message = "Today's :sugaicat:\n"
-message += url
-
-slack_post_message(message,cat_channel)
+title = datetime.datetime.now().strftime('%Y-%m-%d')
+slack_post_file(message,cat_channel,filepath,title)
