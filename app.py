@@ -45,6 +45,13 @@ def select_random_url():
             results = cur.fetchall()
     return results[0][1]
 
+def select_random_file():
+    path = os.environ["SUGAICAT_PATH"]
+    files = os.listdir(path)
+    files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
+    fileone = random.choice(files_file)
+    return os.path.join(path, fileone)
+
 # ---event function---
 
 @app.event("member_joined_channel")
@@ -123,13 +130,17 @@ def handle_message_events(say, logger, context, message):
         say('PONG')
 
     if command == "sugaicat":
-        path = "sugaicat.txt"
-        with open(path) as f:
-            lines = f.readlines()
+        filepath = select_random_file()
+        channel = message['channel']
+        filename = os.path.basename(filepath)
+        title = "sugaicat"
+        app.client.files_upload(
+                channels=channel,
+                file=filepath,
+                filename=filename,
+                title=title
+        )
 
-        rand_max = 797
-        say(lines[random.randint(0,rand_max-1)])
-    
     if command == "intro_test":
         test_user_id = os.environ.get("TEST_USER_ID")
         say(create_intro_message(test_user_id,test_user_id))
