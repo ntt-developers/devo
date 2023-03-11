@@ -66,7 +66,7 @@ def get_search_img(keyword):
     if not os.path.isdir(json_dir):
         os.mkdir(json_dir)
 
-    service = build("customsearch", "v1", developerKey=g_api_key)
+    service = build("customsearch", "v1", developerKey=g_api_key, cache_discovery=False)
 
     page_limit = 2
     start_index = 1
