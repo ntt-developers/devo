@@ -3,8 +3,12 @@ import logging
 import re
 import random
 import psycopg2
+import datetime
+import json
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+from time import sleep
+from googleapiclient.discovery import build
 
 # app init
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
@@ -51,6 +55,51 @@ def select_random_file():
     files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
     fileone = random.choice(files_file)
     return os.path.join(path, fileone)
+
+def get_search_img(keyword):
+    today = datetime.datetime.today().strftime("%Y%m%d")
+    timestamp = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
+    json_dir = os.environ.get("JSON_DIR")
+    g_api_key = os.environ.get("GOOGLE_API_KEY")
+    cse_id = os.environ.get("CUSTOM_SEARCH_ENGINE_ID")
+
+    if not os.path.isdir(json_dir):
+        os.mkdir(json_dir)
+
+    service = build("customsearch", "v1", developerKey=g_api_key)
+
+    page_limit = 2
+    start_index = 1
+    response = []
+    for n_page in range(0, page_limit):
+        try:
+            sleep(1)
+            response.append(service.cse().list(
+                q=keyword,
+                cx=cse_id,
+                lr='lang_ja',
+                num=10,
+                start=start_index,
+                searchType='image'
+            ).execute())
+            start_index = response[n_page].get("queries").get("nextPage")[0].get("startIndex")
+        except Exception as e:
+            logging.error(e)
+            break
+
+    out = {'snapshot_ymd': today, 'snapshot_timestamp': timestamp, 'response': []}
+    out['response'] = response
+    filename = os.path.join(json_dir, today + "_" + timestamp + '.json')
+    with open(filename,'w') as f:
+        json.dump(out, f, indent=4)
+
+    img_list = []
+    for one_res in range(len(response)):
+        if len(response[one_res]['items']) > 0:
+            for i in range(len(response[one_res]['items'])):
+                img_list.append(response[one_res]['items'][i]['link'])
+    
+    return img_list
 
 # ---event function---
 
@@ -148,11 +197,22 @@ def handle_message_events(say, logger, context, message):
     if command == "jikkainu":
         say(select_random_url())
 
+    if command[:4] == "img ":
+        keyword = command.removeprefix("img ")
+        img_list = get_search_img(keyword)
+        img_url = random.choice(img_list)
+        say(img_url)
+
+    if command[:6] == "image ":
+        keyword = command.removeprefix("image ")
+        img_list = get_search_img(keyword)
+        img_url = random.choice(img_list)
+        say(img_url)
+
 # other message
 @app.event("message")
 def handle_message_events(body, logger):
     logger.debug(body)
-
 
 # app start
 if __name__ == "__main__":
