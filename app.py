@@ -150,6 +150,8 @@ def ask_for_introduction(body, logger, say):
 
         if len(res) == 0:
             inviteUser = "unknown"
+        else if res[0][2] == None:
+            inviteUser = "unknown"
         else:
             inviteUser = res[0][2]
 
