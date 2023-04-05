@@ -158,11 +158,10 @@ def ask_for_introduction(body, logger, say):
         say(text=message, channel=welcome_channel_id)
 
         # delete flag
-        if len(res) != 0:
-            upd_sql = "UPDATE inviter SET delete_flag = TRUE WHERE guest_user_id = %s"
-            with psycopg2.connect(dsn) as conn:
-                with conn.cursor() as cur:
-                    cur.execute(upd_sql,(joinUser,))
+        upd_sql = "UPDATE inviter SET delete_flag = TRUE WHERE guest_user_id = %s"
+        with psycopg2.connect(dsn) as conn:
+            with conn.cursor() as cur:
+                cur.execute(upd_sql,(joinUser,))
 
 # TODO:add mention command
 @app.message(re.compile('^devo '))
