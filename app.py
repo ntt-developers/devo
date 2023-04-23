@@ -41,7 +41,7 @@ def create_intro_message(joinUserName,inviteUserName):
 
 def select_random_url():
     dsn = os.environ.get("PSQL_DSN_DOG")
-    sql = "SELECT * FROM twurl WHERE index=(SELECT (max(index) * random())::int FROM twurl)"
+    sql = "SELECT index,tweeturl FROM twurl order by random() limit 1"
     
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
