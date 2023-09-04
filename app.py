@@ -39,15 +39,15 @@ def create_intro_message(joinUserName,inviteUserName):
 
     return message
 
-def select_random_url():
+def select_random_jikkainu():
     dsn = os.environ.get("PSQL_DSN_DOG")
-    sql = "SELECT index,tweeturl FROM twurl order by random() limit 1"
+    sql = "select id, text from tweet order by random() limit 1"
     
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
             cur.execute(sql)
             results = cur.fetchall()
-    return results[0][1]
+    return results
 
 def select_random_file():
     path = os.environ["SUGAICAT_PATH"]
@@ -196,7 +196,14 @@ def handle_message_events(say, logger, context, message):
         say(create_intro_message(test_user_id,test_user_id))
 
     if command == "jikkainu":
-        say(select_random_url())
+        data = select_random_jikkainu()
+        tid = data[0][0]
+        url = "https://x.com/jikkainu/status/" + tid
+        text = data[0][1]
+        message = text
+        message += "\n"
+        message += url
+        say(message)
 
     if command[:4] == "img ":
         keyword = command.removeprefix("img ")
