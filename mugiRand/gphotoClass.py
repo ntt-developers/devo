@@ -35,7 +35,7 @@ class gphotoClass():
             with open(self.TOKEN_FILE, 'wb') as token:
                 pickle.dump(creds, token)
 
-        return build(self.API_SERVICE_NAME, self.API_VERSION, credentials=creds,static_discovery=False)
+        return build(self.API_SERVICE_NAME, self.API_VERSION, credentials=creds,static_discovery=False, cache_discovery=False)
 
     def get_base_url(self, pid):
         mediaItem = self.service.mediaItems().get(mediaItemId=pid).execute()

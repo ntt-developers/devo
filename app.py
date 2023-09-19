@@ -9,6 +9,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from time import sleep
 from googleapiclient.discovery import build
+from mugiRand import mugiRandClass as mugi
 
 # app init
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
@@ -48,13 +49,6 @@ def select_random_jikkainu():
             cur.execute(sql)
             results = cur.fetchall()
     return results
-
-def select_random_file():
-    path = os.environ["SUGAICAT_PATH"]
-    files = os.listdir(path)
-    files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
-    fileone = random.choice(files_file)
-    return os.path.join(path, fileone)
 
 def get_search_img(keyword):
     today = datetime.datetime.today().strftime("%Y%m%d")
@@ -180,9 +174,10 @@ def handle_message_events(say, logger, context, message):
         say('PONG')
 
     if command == "sugaicat":
-        filepath = select_random_file()
+        mg = mugi.mugiRandClass()
+        filepath = mg.get_file()
         channel = message['channel']
-        filename = os.path.basename(filepath)
+        filename = mg.filename
         title = "sugaicat"
         app.client.files_upload(
                 channels=channel,

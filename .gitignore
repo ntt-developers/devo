@@ -1,6 +1,8 @@
 *.bak
 *.sh
 *.txt
+*.pyc
+__pycache__/
 venv/
 .venv/
 mugi_file
