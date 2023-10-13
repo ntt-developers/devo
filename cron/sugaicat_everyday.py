@@ -29,7 +29,7 @@ filename = mg.filename
 cat_channel = os.environ["CAT_CHANNEL_ID"]
 
 message = "Today's :sugaicat:\n"
-title = datetime.datetime.now().strftime('%Y-%m-%d')
+title = "撮影日：" + mg.createDate.strftime('%Y-%m-%d')
 slack_post_file(message,cat_channel,filepath,filename,title)
 
 mg.delete_tmp_file()
