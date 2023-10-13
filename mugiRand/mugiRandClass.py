@@ -63,7 +63,7 @@ class mugiRandClass():
         os.remove(self.temp_file)
 
     def __init__(self):
-        self.dsn = os.environ["DSN"]
+        self.dsn = os.environ["MUGI_DSN"]
         self.tmp_f = os.environ["TMP_F"]
         self.select_random_pid()
         self.get_burl()

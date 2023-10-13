@@ -12,7 +12,7 @@ API_VERSION = 'v1'
 CLIENT_SECRET_FILE = os.environ["CLIENT_SECRET_FILE"]
 TOKEN_FILE = os.environ["TOKEN_FILE"]
 
-dsn = os.environ["DSN"]
+dsn = os.environ["MUGI_DSN"]
 
 def get_authenticated_service():
     creds = None
