@@ -196,8 +196,9 @@ def handle_message_events(say, logger, context, message):
         url = "https://x.com/jikkainu/status/" + tid
         text = data[0][1]
         message = text
-        message += "\n"
+        message += "\n `"
         message += url
+        message += "`"
         say(message)
 
     if command[:4] == "img ":

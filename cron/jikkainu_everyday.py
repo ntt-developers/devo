@@ -36,7 +36,8 @@ text = data[0][1]
 message = "Today's 実家のいぬ\n"
 message += "\n"
 message += text
-message += "\n"
+message += "\n `"
 message += url
+message += "`"
 
 slack_post_message(message,dog_channel)

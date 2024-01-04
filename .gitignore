@@ -2,7 +2,7 @@
 *.sh
 *.txt
 *.pyc
-__pycache__
+**/__pycache__/**
 venv/
 .venv/
 mugi_file
