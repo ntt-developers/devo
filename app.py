@@ -179,8 +179,8 @@ def handle_message_events(say, logger, context, message):
         channel = message['channel']
         filename = mg.filename
         title = "撮影日：" + mg.createDate.strftime('%Y-%m-%d')
-        app.client.files_upload(
-                channels=channel,
+        app.client.files_upload_v2(
+                channel=channel,
                 file=filepath,
                 filename=filename,
                 title=title
