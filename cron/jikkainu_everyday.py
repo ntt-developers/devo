@@ -29,15 +29,14 @@ def slack_post_message(message,channel):
 data = select_random()
 dog_channel = os.environ["DOG_CHANNEL_ID"]
 tid = data[0][0]
-url = "https://x.com/jikkainu/status/" + tid
+url = "https://fxtwitter.com/jikkainu/status/" + tid
 
 text = data[0][1]
 
 message = "Today's 実家のいぬ\n"
 message += "\n"
 message += text
-message += "\n `"
+message += "\n"
 message += url
-message += "`"
 
 slack_post_message(message,dog_channel)

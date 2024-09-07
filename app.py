@@ -193,12 +193,11 @@ def handle_message_events(say, logger, context, message):
     if command == "jikkainu":
         data = select_random_jikkainu()
         tid = data[0][0]
-        url = "https://x.com/jikkainu/status/" + tid
+        url = "https://fxtwitter.com/jikkainu/status/" + tid
         text = data[0][1]
         message = text
-        message += "\n `"
+        message += "\n"
         message += url
-        message += "`"
         say(message)
 
     if command[:4] == "img ":
