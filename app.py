@@ -91,7 +91,11 @@ def get_search_img(keyword):
     for one_res in range(len(response)):
         if len(response[one_res]['items']) > 0:
             for i in range(len(response[one_res]['items'])):
-                img_list.append(response[one_res]['items'][i]['link'])
+                tmp_dic = {
+                        "link":response[one_res]['items'][i]['link'],
+                        "thmb":response[one_res]['items'][i]['image']['thumbnailLink']
+                }
+                img_list.append(tmp_dic)
     
     return img_list
 
@@ -203,14 +207,22 @@ def handle_message_events(say, logger, context, message):
     if command[:4] == "img ":
         keyword = command.removeprefix("img ")
         img_list = get_search_img(keyword)
-        img_url = random.choice(img_list)
-        say(img_url)
+        img_data = random.choice(img_list)
+        message = img_data.get("link")
+        message += "\n<"
+        message += img_data.get("thmb")
+        message += "|(thumbnail)>"
+        say(message)
 
     if command[:6] == "image ":
         keyword = command.removeprefix("image ")
         img_list = get_search_img(keyword)
-        img_url = random.choice(img_list)
-        say(img_url)
+        img_data = random.choice(img_list)
+        message = img_data.get("link")
+        message += "\n<"
+        message += img_data.get("thmb")
+        message += "|(thumbnail)>"
+        say(message)
 
 # other message
 @app.event("message")
