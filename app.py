@@ -92,10 +92,30 @@ def get_search_img(keyword):
         if len(response[one_res]['items']) > 0:
             for i in range(len(response[one_res]['items'])):
                 tmp_dic = {
+                        "title":response[one_res]['items'][i]['title'],
                         "link":response[one_res]['items'][i]['link'],
                         "thmb":response[one_res]['items'][i]['image']['thumbnailLink']
                 }
                 img_list.append(tmp_dic)
+
+    # insert log
+    dsn = os.environ.get("PSQL_DSN_DEVO")
+    sql_head = "INSERT INTO gimglog_head(terms) VALUES (%s) RETURNING id"
+    sql_item = "INSERT INTO gimglog_item(id,count,title,link,thumb) VALUES(%s,%s,%s,%s,%s)"
+
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql_head,(keyword,))
+            
+            db_id = cur.fetchone()[0]
+            db_count = 0
+            for lis in img_list:
+                db_count += 1
+                cur.execute(sql_item,(db_id,
+                                    db_count,
+                                    lis.get("title"),
+                                    lis.get("link"),
+                                    lis.get("thmb"),))
     
     return img_list
 
