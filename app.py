@@ -244,6 +244,45 @@ def handle_message_events(say, logger, context, message):
         message += "|(thumbnail)>"
         say(message)
 
+# shinraisha
+@app.action("shinraisha")
+def handle_some_action(ack, body, logger):
+    ack()
+    logger.debug(body)
+
+    dsn = os.environ.get("PSQL_DSN_DEVO")
+
+    ch_id = body.get("channel").get("id")
+    user_id = body.get("user").get("id")
+
+    # check duplicate
+    sel_sql = "select count(*) from shinrai where user_id = %s and click_at between %s and %s"
+    today_str = datetime.datetime.today().strftime("%Y-%m-%d")
+    begin_str = today_str + " 6:30"
+    end_str = today_str + " 7:31"
+    with psycopg2.connect(dsn) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sel_sql,(user_id,begin_str,end_str))
+                count_res = cur.fetchall()
+    
+    if count_res[0][0] == 0:
+        ins_sql = "INSERT INTO shinrai (user_id) VALUES(%s)"
+        with psycopg2.connect(dsn) as conn:
+            with conn.cursor() as cur:
+                cur.execute(ins_sql,(user_id,))
+
+        app.client.chat_postEphemeral(
+            channel=ch_id,
+            user=user_id,
+            text="おはようございます！ 今日も :shinraisha: ですね！\nあなたが今日の:shinraisha: であることを記録しました。そのうちランキングにしますね。\n\n :kawagoe: 「休日に早起きするやつは信頼できる」\n\n※このメッセージは自然消滅しますが、邪魔であれば削除ボタンから消してください。"
+        )
+    else:
+        app.client.chat_postEphemeral(
+            channel=ch_id,
+            user=user_id,
+            text="あなたは既に今日の :shinraisha: です！\n※このメッセージは自然消滅しますが、邪魔であれば削除ボタンから消してください。"
+        )
+
 # other message
 @app.event("message")
 def handle_message_events(body, logger):
