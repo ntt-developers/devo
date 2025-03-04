@@ -257,6 +257,8 @@ def handle_some_action(ack, body, logger):
 
     # check duplicate
     sel_sql = "select count(*) from shinrai where user_id = %s and click_at between %s and %s"
+    sel_sql_dc = "select count(*) from shinrai where click_at between %s and %s"
+    sel_sql_tc = "select count(*) from shinrai where user_id = %s"
     today_str = datetime.datetime.today().strftime("%Y-%m-%d")
     begin_str = today_str + " 6:30"
     end_str = today_str + " 7:31"
@@ -264,23 +266,33 @@ def handle_some_action(ack, body, logger):
             with conn.cursor() as cur:
                 cur.execute(sel_sql,(user_id,begin_str,end_str))
                 count_res = cur.fetchall()
-    
+            with conn.cursor() as cur:
+                cur.execute(sel_sql_dc,(begin_str,end_str))
+                count_dc = cur.fetchall()
+            with conn.cursor() as cur:
+                cur.execute(sel_sql_tc,(user_id,))
+                count_tc = cur.fetchall()
+   
     if count_res[0][0] == 0:
+    #if count_res[0][0] <10:
         ins_sql = "INSERT INTO shinrai (user_id) VALUES(%s)"
         with psycopg2.connect(dsn) as conn:
             with conn.cursor() as cur:
                 cur.execute(ins_sql,(user_id,))
+        
+        filetext = file_read("shinraisha.txt")
+        message = filetext.format(str(count_dc[0][0]+1),str(count_tc[0][0]+1))
 
         app.client.chat_postEphemeral(
             channel=ch_id,
             user=user_id,
-            text="おはようございます！ 今日も :shinraisha: ですね！\nあなたが今日の:shinraisha: であることを記録しました。そのうちランキングにしますね。\n\n :kawagoe: 「休日に早起きするやつは信頼できる」\n\n※このメッセージは自然消滅しますが、邪魔であれば削除ボタンから消してください。"
+            text=message
         )
     else:
         app.client.chat_postEphemeral(
             channel=ch_id,
             user=user_id,
-            text="あなたは既に今日の :shinraisha: です！\n※このメッセージは自然消滅しますが、邪魔であれば削除ボタンから消してください。"
+            text="あなたは既に今日の :shinraisha: です！"
         )
 
 # other message
