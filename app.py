@@ -50,6 +50,13 @@ def select_random_jikkainu():
             results = cur.fetchall()
     return results
 
+def select_sugaicat_file():
+    path = os.environ["SUGAICAT_PATH"]
+    files = os.listdir(path)
+    files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
+    fileone = random.choice(files_file)
+    return os.path.join(path, fileone)
+
 def get_search_img(keyword):
     today = datetime.datetime.today().strftime("%Y%m%d")
     timestamp = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
@@ -198,11 +205,14 @@ def handle_message_events(say, logger, context, message):
         say('PONG')
 
     if command == "sugaicat":
-        mg = mugi.mugiRandClass()
-        filepath = mg.get_file()
+        #mg = mugi.mugiRandClass()
+        #filepath = mg.get_file()
         channel = message['channel']
-        filename = mg.filename
-        title = "撮影日：" + mg.createDate.strftime('%Y-%m-%d')
+        #filename = mg.filename
+        #title = "撮影日：" + mg.createDate.strftime('%Y-%m-%d')
+        filepath = select_sugaicat_file()
+        filename = os.path.basename(filepath)
+        title = filename
         app.client.files_upload_v2(
                 channel=channel,
                 file=filepath,

@@ -3,9 +3,10 @@ import datetime
 import requests
 import sys
 import json
+import random
 sys.path.append('..')
 
-from mugiRand import mugiRandClass as mugi
+#from mugiRand import mugiRandClass as mugi
 
 def slack_post_file(message,channel,filepath,filename,title):
 
@@ -52,16 +53,26 @@ def slack_post_file(message,channel,filepath,filename,title):
 
     #print(ret_3.content)
 
+def select_sugaicat_file():
+    path = os.environ["SUGAICAT_PATH"]
+    files = os.listdir(path)
+    files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
+    fileone = random.choice(files_file)
+    return os.path.join(path, fileone)
+
 # --- Main ---
 
-mg = mugi.mugiRandClass()
-filepath = mg.get_file()
-filename = mg.filename
+#mg = mugi.mugiRandClass()
+#filepath = mg.get_file()
+#filename = mg.filename
+filepath = select_sugaicat_file()
+filename = os.path.basename(filepath)
 
 cat_channel = os.environ["CAT_CHANNEL_ID"]
 
 message = "Today's :sugaicat:\n"
-title = "撮影日：" + mg.createDate.strftime('%Y-%m-%d')
+#title = "撮影日：" + mg.createDate.strftime('%Y-%m-%d')
+title = filename
 slack_post_file(message,cat_channel,filepath,filename,title)
 
-mg.delete_tmp_file()
+#mg.delete_tmp_file()
