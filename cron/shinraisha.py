@@ -37,12 +37,13 @@ def dateCheck():
 
 # --- Main ---
 def main():
-    if not dateCheck():
-        return
+    #if not dateCheck():
+    #    return
 
     post_channel = os.environ["BL_CHANNEL_ID"]
 
-    blo = '[{"text": {"type": "mrkdwn","text": "*おはようございます！* :shinraisha: になりますか？"},"type": "section"},{"type": "divider"},{"elements": [{"text": {"type": "plain_text","text": "起床する"},"action_id": "shinraisha","type": "button"}],"type": "actions"}]'
+#    blo = '[{"text": {"type": "mrkdwn","text": "*おはようございます！* :shinraisha: になりますか？"},"type": "section"},{"type": "divider"},{"elements": [{"text": {"type": "plain_text","text": "起床する"},"action_id": "shinraisha","type": "button"}],"type": "actions"}]'
+    blo = '[{"text": {"type": "mrkdwn","text": "*おはようございます！* :shinraisha: になりますか？"},"type": "section"},{"type": "divider"},{"elements": [{"text": {"type": "plain_text","text": "起床する"},"action_id": "shinraisha","type": "button"}],"type": "actions"},{"type": "divider"},{"type": "actions","elements": [{"type": "button","text": {"type": "plain_text","text": "ランキングを見る"},"action_id": "shinrai-rank"}]},{"type": "actions","elements": [{"type": "button","text": {"type": "plain_text","text": "これは何？"},"action_id": "shinrai-help"}]}]'
 
     slack_post_message(blo,post_channel)
 

@@ -42,11 +42,11 @@ def main():
     ret_json = slack_search()
 
     matches = ret_json.get("messages").get("matches")
-    for mat in matches:
+    for mat in reversed(matches):
         main_ts = mat.get("ts")
         main_unix = int(main_ts.split('.')[0])
         main_time = datetime.datetime.fromtimestamp(main_unix)
-        if(datetime.datetime.now() - datetime.timedelta(hours=1,minutes=3) > main_time):
+        if(datetime.datetime.now() - datetime.timedelta(hours=1,minutes=1) > main_time):
             user_id = mat.get("user")
             text = mat.get("text")
             insert_log(main_ts,main_time,user_id,text)

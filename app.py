@@ -256,7 +256,7 @@ def handle_message_events(say, logger, context, message):
 
 # shinraisha
 @app.action("shinraisha")
-def handle_some_action(ack, body, logger):
+def handle_action_shinraisha(ack, body, logger):
     ack()
     logger.debug(body)
 
@@ -284,7 +284,6 @@ def handle_some_action(ack, body, logger):
                 count_tc = cur.fetchall()
    
     if count_res[0][0] == 0:
-    #if count_res[0][0] <10:
         ins_sql = "INSERT INTO shinrai (user_id) VALUES(%s)"
         with psycopg2.connect(dsn) as conn:
             with conn.cursor() as cur:
@@ -304,6 +303,54 @@ def handle_some_action(ack, body, logger):
             user=user_id,
             text="あなたは既に今日の :shinraisha: です！"
         )
+#shinrai-rank
+@app.action("shinrai-rank")
+def handle_action_shinrai_rank(ack, body, logger):
+    ack()
+    logger.debug(body)
+
+    dsn = os.environ.get("PSQL_DSN_DEVO")
+
+    ch_id = body.get("channel").get("id")
+    user_id = body.get("user").get("id")
+
+    sql = "select rnk.user_id, rnk.cnt, rnk.ranking from (select user_id,count(user_id) AS cnt,rank() OVER (ORDER BY count(user_id) desc) AS ranking from shinrai group by user_id order by count(user_id) desc) AS rnk where rnk.user_id = %s"
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql,(user_id,))
+            results = cur.fetchall()
+
+    if len(results) != 0:
+        message = "あなたはランキング"
+        message += str(results[0][2])
+        message += "位で、通算"
+        message += str(results[0][1])
+        message += "回です"
+    else:
+        message = "あなたはまだランキングに記載されていません"
+
+    app.client.chat_postEphemeral(
+            channel=ch_id,
+            user=user_id,
+            text=message
+    )
+
+
+#shinrai-help
+@app.action("shinrai-help")
+def handle_action_shinrai_help(ack, body, logger):
+    ack()
+    logger.debug(body)
+
+    ch_id = body.get("channel").get("id")
+    user_id = body.get("user").get("id")
+
+    app.client.chat_postEphemeral(
+            channel=ch_id,
+            user=user_id,
+            text=":kawagoe: 氏の「休日に早起きするやつは信頼できる」という格言をもとに作成されました。\n土日祝日の AM6:30 - AM7:30 の間に起床した人を記録します。\n（blackholeの機能により起床ボタンが消えて押せなくなることを利用しています）\n自己申告制なので、夜更かしでも二度寝でも大丈夫！\n何かあれば、devo管理人のyamagataまでどうぞ"
+    )
+
 
 # other message
 @app.event("message")
