@@ -37,8 +37,8 @@ def dateCheck():
 
 # --- Main ---
 def main():
-    #if not dateCheck():
-    #    return
+    if not dateCheck():
+        return
 
     post_channel = os.environ["BL_CHANNEL_ID"]
 
