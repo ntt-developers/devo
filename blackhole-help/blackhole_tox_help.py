@@ -5,13 +5,13 @@ import time
 import psycopg2
 
 token = os.environ.get("SLACK_USER_TOKEN")
-bl_ch_id = os.environ.get("BL_CHANNEL_ID")
+bl_ch_id = "CJ4PJCC2E"
 dsn = os.environ.get("BL_LOG_DSN")
 
 def slack_search():
     url = "https://slack.com/api/search.messages"
     params = {
-            "query":"in:#blackhole",
+            "query":"in:#toxin_furious",
             "count":"100",
             "sort_dir":"asc"
     }
@@ -47,10 +47,10 @@ def main():
         main_ts = mat.get("ts")
         main_unix = int(main_ts.split('.')[0])
         main_time = datetime.datetime.fromtimestamp(main_unix)
-        if(datetime.datetime.now() - datetime.timedelta(hours=1,minutes=1) > main_time):
+        if(datetime.datetime.now() - datetime.timedelta(minutes=1) > main_time):
             user_id = mat.get("user")
             text = mat.get("text")
-            insert_log(main_ts,main_time,user_id,text)
+            #insert_log(main_ts,main_time,user_id,text)
             slack_delete_post(main_ts)
             time.sleep(2)
 
